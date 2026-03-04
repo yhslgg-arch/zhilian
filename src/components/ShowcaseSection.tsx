@@ -6,6 +6,7 @@ import {
   GitBranch,
   Puzzle,
   Route,
+  SearchCheck,
 } from "lucide-react";
 
 import screenshotDashboard from "@/assets/screenshot-dashboard.png";
@@ -13,6 +14,7 @@ import screenshotPipelineList from "@/assets/screenshot-pipeline-list.png";
 import screenshotPipelineEditor from "@/assets/screenshot-pipeline-editor.png";
 import screenshotPlugins from "@/assets/screenshot-plugins.png";
 import screenshotTrace from "@/assets/screenshot-trace.png";
+import screenshotSearch from "@/assets/screenshot-search.png";
 
 const tabs = [
   {
@@ -50,6 +52,15 @@ const tabs = [
     desc: "内置代码执行器、数据合并器、实体关系抽取、智能表格提取等丰富插件，支持按类型（输入/处理/逻辑/提取/输出）分类管理，插件版本独立管控，支持自定义上传扩展。",
     highlights: ["多类型插件分类", "版本管理 & 状态控制", "自定义插件上传", "即插即用的扩展能力"],
     image: screenshotPlugins,
+  },
+  {
+    id: "search",
+    icon: SearchCheck,
+    label: "召回测试",
+    title: "多维混合召回测试台",
+    desc: "一站式搜索测试面板：选择知识库、Embedding 模型与 LLM，灵活调节向量/关键词/标签三路召回权重，支持父子块回溯、自动补齐向量索引。输入问题即刻获得检索结果与 LLM 生成回答，处理完立马可查看效果，快速验证召回质量。",
+    highlights: ["向量+关键词+标签三路召回", "权重实时可调", "父子块语义回溯", "检索+问答一键测试"],
+    image: screenshotSearch,
   },
   {
     id: "trace",
