@@ -1,10 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import nodemailer from "npm:nodemailer@6.9.16";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+const NOTIFY_EMAIL = "153721773@qq.com";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -21,83 +24,92 @@ serve(async (req) => {
       );
     }
 
+    // Generate HTML email via Lovable AI
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
-    }
+    let htmlContent = "";
 
-    // Use AI to compose and format email content, then we send via a simple approach
-    const emailBody = `
-知识工厂 KnowledgeFactory - 新用户申请体验通知
-================================================
-
-📋 申请人信息：
-  姓名：${name}
-  公司：${company}
-  邮箱：${email}
-  电话：${phone || "未填写"}
-  行业：${industry}
-  规模：${scale || "未填写"}
-
-📝 需求描述：
-  ${desc || "未填写"}
-
-================================================
-此邮件由 KnowledgeFactory 官网自动发送
-    `.trim();
-
-    // Use Lovable AI to generate a nicely formatted summary (optional enrichment)
-    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash-lite",
-        messages: [
-          {
-            role: "system",
-            content: `你是一个邮件通知助手。根据用户的申请信息，生成一封简洁专业的HTML邮件正文（只要body内的内容）。邮件用于通知管理员有新的体验申请。请使用中文，简洁明了。包含所有申请信息。使用简洁的内联样式。`,
+    if (LOVABLE_API_KEY) {
+      try {
+        const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            "Content-Type": "application/json",
           },
-          {
-            role: "user",
-            content: `新申请信息：\n姓名：${name}\n公司：${company}\n邮箱：${email}\n电话：${phone || "未填写"}\n行业：${industry}\n规模：${scale || "未填写"}\n需求描述：${desc || "未填写"}`,
-          },
-        ],
-      }),
-    });
+          body: JSON.stringify({
+            model: "google/gemini-2.5-flash-lite",
+            messages: [
+              {
+                role: "system",
+                content: "你是一个邮件通知助手。根据用户的申请信息，生成一封简洁专业的HTML邮件正文（只要body内的内容）。邮件用于通知管理员有新的体验申请。请使用中文，简洁明了。包含所有申请信息。使用简洁的内联样式。不要用markdown代码块包裹。",
+              },
+              {
+                role: "user",
+                content: `新申请信息：\n姓名：${name}\n公司：${company}\n邮箱：${email}\n电话：${phone || "未填写"}\n行业：${industry}\n规模：${scale || "未填写"}\n需求描述：${desc || "未填写"}`,
+              },
+            ],
+          }),
+        });
 
-    let htmlContent = emailBody;
-    if (aiResponse.ok) {
-      const aiData = await aiResponse.json();
-      const aiContent = aiData.choices?.[0]?.message?.content;
-      if (aiContent) {
-        htmlContent = aiContent;
+        if (aiResponse.ok) {
+          const aiData = await aiResponse.json();
+          const aiContent = aiData.choices?.[0]?.message?.content;
+          if (aiContent) {
+            htmlContent = aiContent.replace(/^```html?\n?/i, "").replace(/\n?```$/i, "");
+          }
+        }
+      } catch (aiErr) {
+        console.error("AI format error:", aiErr);
       }
     }
 
-    // Send email using Resend-compatible API via fetch
-    // Since we don't have a dedicated email service, we'll use a webhook/notification approach
-    // For now, store the application and log it. In production, integrate with email service.
-    
-    // Try sending via Supabase's built-in email (using the database to store applications)
-    console.log("=== NEW APPLICATION RECEIVED ===");
-    console.log(`Name: ${name}`);
-    console.log(`Company: ${company}`);
-    console.log(`Email: ${email}`);
-    console.log(`Phone: ${phone}`);
-    console.log(`Industry: ${industry}`);
-    console.log(`Scale: ${scale}`);
-    console.log(`Description: ${desc}`);
-    console.log(`AI-formatted content: ${htmlContent}`);
-    console.log("================================");
+    // Fallback plain HTML
+    if (!htmlContent) {
+      htmlContent = `
+        <h2 style="color:#0ea5e9;">知识工厂 - 新用户申请体验</h2>
+        <table style="border-collapse:collapse;width:100%;max-width:500px;">
+          <tr><td style="padding:8px;font-weight:bold;">姓名</td><td style="padding:8px;">${name}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;">公司</td><td style="padding:8px;">${company}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;">邮箱</td><td style="padding:8px;">${email}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;">电话</td><td style="padding:8px;">${phone || "未填写"}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;">行业</td><td style="padding:8px;">${industry}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;">规模</td><td style="padding:8px;">${scale || "未填写"}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;">需求描述</td><td style="padding:8px;">${desc || "未填写"}</td></tr>
+        </table>
+      `;
+    }
 
-    // Store in database for reliable tracking
+    // Send email via QQ Mail SMTP
+    const QQ_SMTP_PASSWORD = Deno.env.get("QQ_SMTP_PASSWORD");
+    if (!QQ_SMTP_PASSWORD) {
+      throw new Error("QQ_SMTP_PASSWORD is not configured");
+    }
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.qq.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: NOTIFY_EMAIL,
+        pass: QQ_SMTP_PASSWORD,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"知识工厂 KnowledgeFactory" <${NOTIFY_EMAIL}>`,
+      to: NOTIFY_EMAIL,
+      subject: `【新申请】${company} - ${name} 申请体验`,
+      html: htmlContent,
+      replyTo: email,
+    });
+
+    console.log(`Email sent for application from ${name} at ${company}`);
+
+    // Also store in database
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    
-    const dbResponse = await fetch(`${supabaseUrl}/rest/v1/applications`, {
+
+    await fetch(`${supabaseUrl}/rest/v1/applications`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -106,23 +118,15 @@ serve(async (req) => {
         Prefer: "return=minimal",
       },
       body: JSON.stringify({
-        name,
-        company,
-        email,
+        name, company, email,
         phone: phone || null,
         industry,
         scale: scale || null,
         description: desc || null,
         email_content: htmlContent,
-        notify_email: "153721773@qq.com",
+        notify_email: NOTIFY_EMAIL,
       }),
     });
-
-    if (!dbResponse.ok) {
-      const errText = await dbResponse.text();
-      console.error("DB insert error:", errText);
-      // Don't fail the request if DB insert fails, the log is still captured
-    }
 
     return new Response(
       JSON.stringify({ success: true, message: "申请已提交" }),
