@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Send } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const industries = [
   "金融保险", "教育培训", "医疗健康", "法律咨询", "制造业",
@@ -14,17 +15,33 @@ const ApplySection = () => {
   const [form, setForm] = useState({
     name: "", company: "", email: "", phone: "", industry: "", scale: "", desc: "",
   });
+  const [submitting, setSubmitting] = useState(false);
 
   const update = (key: string, val: string) => setForm((p) => ({ ...p, [key]: val }));
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.company || !form.email || !form.industry) {
       toast.error("请填写必填项");
       return;
     }
-    toast.success("提交成功！我们的团队将在 24 小时内与您联系");
-    setForm({ name: "", company: "", email: "", phone: "", industry: "", scale: "", desc: "" });
+
+    setSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("send-application", {
+        body: form,
+      });
+
+      if (error) throw error;
+
+      toast.success("提交成功！我们的团队将在 24 小时内与您联系");
+      setForm({ name: "", company: "", email: "", phone: "", industry: "", scale: "", desc: "" });
+    } catch (err) {
+      console.error("Submit error:", err);
+      toast.error("提交失败，请稍后重试");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const inputClass =
@@ -140,10 +157,11 @@ const ApplySection = () => {
 
           <button
             type="submit"
-            className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-base font-semibold text-primary-foreground transition-all hover:glow-cyan hover:scale-[1.01]"
+            disabled={submitting}
+            className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-base font-semibold text-primary-foreground transition-all hover:glow-cyan hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Send className="h-4 w-4" />
-            提交申请
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            {submitting ? "提交中..." : "提交申请"}
           </button>
 
           <p className="mt-4 text-center text-xs text-muted-foreground">
