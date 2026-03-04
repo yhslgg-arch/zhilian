@@ -5,6 +5,7 @@ import { Menu, X, Zap } from "lucide-react";
 const navLinks = [
   { label: "首页", href: "#hero" },
   { label: "核心能力", href: "#features" },
+  { label: "产品展示", href: "#showcase" },
   { label: "技术架构", href: "#architecture" },
   { label: "价格方案", href: "#pricing" },
   { label: "申请体验", href: "#apply" },
