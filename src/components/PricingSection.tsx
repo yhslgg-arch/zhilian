@@ -50,7 +50,7 @@ const plans = [
     highlight: false,
     badge: "⭐ 推荐",
     cta: "联系销售",
-    ctaStyle: "border border-secondary text-secondary hover:bg-secondary/10",
+    ctaStyle: "border border-primary/30 text-primary hover:bg-primary/5",
     features: features.map((f) => ({ label: f.label, value: f.flagship })),
   },
 ];
@@ -67,12 +67,12 @@ const PricingSection = () => (
         <span className="mb-4 inline-block font-mono text-sm font-semibold uppercase tracking-widest text-primary">
           Pricing
         </span>
-        <h2 className="mb-4 text-4xl font-black tracking-tight sm:text-5xl">
-          <span className="text-gradient-cyan">价格方案</span>
+        <h2 className="mb-4 text-4xl font-black tracking-tight sm:text-5xl text-foreground">
+          价格方案
         </h2>
         <p className="mx-auto max-w-xl text-muted-foreground">
           灵活定价，满足不同规模企业的需求 ·
-          <span className="text-secondary font-semibold"> 企业版提供一年免费升级服务</span>
+          <span className="text-primary font-semibold"> 企业版提供一年免费升级服务</span>
         </p>
       </motion.div>
 

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,50 +6,50 @@
 
 @layer base {
   :root {
-    --background: 220 20% 4%;
-    --foreground: 210 40% 93%;
+    --background: 249 18% 95%;
+    --foreground: 222 47% 11%;
 
-    --card: 220 18% 8%;
-    --card-foreground: 210 40% 93%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
 
-    --popover: 220 18% 8%;
-    --popover-foreground: 210 40% 93%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 185 80% 55%;
-    --primary-foreground: 220 20% 4%;
+    --primary: 221 83% 53%; /* Tech Blue */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 300 70% 60%;
-    --secondary-foreground: 220 20% 4%;
+    --secondary: 0 0% 100%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 220 15% 14%;
-    --muted-foreground: 215 20% 55%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 185 80% 55%;
-    --accent-foreground: 220 20% 4%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 15% 16%;
-    --input: 220 15% 16%;
-    --ring: 185 80% 55%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221 83% 53%;
 
     --radius: 0.75rem;
 
-    /* Custom tokens */
-    --glow-cyan: 185 80% 55%;
-    --glow-magenta: 300 70% 60%;
-    --glow-blue: 230 80% 65%;
-    --surface-glass: 220 20% 8%;
+    /* Custom tokens adapted to new Tech Blue theme */
+    --glow-cyan: 199 89% 48%; /* Bright distinct cyan-blue */
+    --glow-magenta: 221 83% 53%; /* Primary blue */
+    --glow-blue: 230 100% 67%; /* Deep violet-blue */
+    --surface-glass: 0 0% 100%; /* White glass */
 
-    --sidebar-background: 220 20% 6%;
-    --sidebar-foreground: 210 40% 93%;
-    --sidebar-primary: 185 80% 55%;
-    --sidebar-primary-foreground: 220 20% 4%;
-    --sidebar-accent: 220 15% 14%;
-    --sidebar-accent-foreground: 210 40% 93%;
-    --sidebar-border: 220 15% 16%;
-    --sidebar-ring: 185 80% 55%;
+    --sidebar-background: 249 18% 95%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 221 83% 53%;
   }
 }
 
@@ -59,11 +59,12 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+    @apply bg-background text-foreground antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
+    @apply font-sans;
   }
 }
 
@@ -84,37 +85,34 @@
   }
 
   .bg-glass {
-    background: hsl(var(--surface-glass) / 0.6);
-    backdrop-filter: blur(20px);
-    border: 1px solid hsl(var(--border) / 0.5);
+    background: hsl(var(--surface-glass));
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   }
 
   .bg-glass-strong {
-    background: hsl(var(--surface-glass) / 0.85);
-    backdrop-filter: blur(30px);
-    border: 1px solid hsl(var(--border) / 0.6);
+    background: hsl(var(--surface-glass) / 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
   }
 
   .glow-cyan {
-    box-shadow: 0 0 30px -5px hsl(var(--glow-cyan) / 0.3),
-                0 0 60px -10px hsl(var(--glow-cyan) / 0.15);
+    box-shadow: 0 0 15px -3px hsl(var(--glow-cyan) / 0.2);
   }
 
   .glow-magenta {
-    box-shadow: 0 0 30px -5px hsl(var(--glow-magenta) / 0.3),
-                0 0 60px -10px hsl(var(--glow-magenta) / 0.15);
+    box-shadow: 0 0 15px -3px hsl(var(--glow-magenta) / 0.2);
   }
 
   .glow-border-cyan {
     border: 1px solid hsl(var(--glow-cyan) / 0.3);
-    box-shadow: inset 0 0 20px -10px hsl(var(--glow-cyan) / 0.1),
-                0 0 20px -10px hsl(var(--glow-cyan) / 0.1);
+    box-shadow: 0 4px 12px -2px hsl(var(--glow-cyan) / 0.1);
   }
 
   .glow-border-magenta {
     border: 1px solid hsl(var(--glow-magenta) / 0.3);
-    box-shadow: inset 0 0 20px -10px hsl(var(--glow-magenta) / 0.1),
-                0 0 20px -10px hsl(var(--glow-magenta) / 0.1);
+    box-shadow: 0 4px 12px -2px hsl(var(--glow-magenta) / 0.1);
   }
 
   .grid-bg {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   LayoutDashboard,
   Workflow,
@@ -81,7 +81,7 @@ const ShowcaseSection = () => {
     <section id="showcase" className="relative py-32 overflow-hidden">
       {/* Background glow */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute right-0 top-1/4 h-[500px] w-[500px] rounded-full bg-secondary/5 blur-[150px]" />
+        <div className="absolute right-0 top-1/4 h-[500px] w-[500px] rounded-full bg-primary/5 blur-[150px]" />
         <div className="absolute left-0 bottom-1/4 h-[400px] w-[400px] rounded-full bg-primary/5 blur-[120px]" />
       </div>
 
@@ -96,103 +96,92 @@ const ShowcaseSection = () => {
           <span className="mb-4 inline-block font-mono text-sm font-semibold uppercase tracking-widest text-primary">
             Product Showcase
           </span>
-          <h2 className="mb-4 text-4xl font-black tracking-tight sm:text-5xl">
-            <span className="text-gradient-magenta">产品实力一览</span>
+          <h2 className="mb-4 text-4xl font-black tracking-tight sm:text-5xl text-foreground">
+            产品实力一览
           </h2>
-          <p className="mx-auto max-w-2xl text-muted-foreground">
+          <p className="text-muted-foreground max-w-2xl mx-auto px-4">
             从全局管控到链路追踪，每一个界面都为
             <span className="text-primary font-semibold">工程化运营</span>
             而设计，让知识处理可配置、可追踪、可扩展
           </p>
         </motion.div>
 
-        {/* Tab bar */}
+        {/* Tab bar — pill underline style */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-10 flex flex-wrap justify-center gap-2"
+          className="mb-10 flex justify-center"
         >
-          {tabs.map((tab) => {
-            const isActive = tab.id === activeTab;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-all duration-300 ${
-                  isActive
-                    ? "bg-primary text-primary-foreground glow-cyan"
-                    : "bg-glass text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
-              >
-                <tab.icon className="h-4 w-4" />
-                {tab.label}
-              </button>
-            );
-          })}
+          <div className="flex flex-wrap justify-center items-center gap-1.5 rounded-2xl bg-white border border-slate-200/80 shadow-md p-2 w-full max-w-full overflow-hidden">
+            {tabs.map((tab) => {
+              const isActive = tab.id === activeTab;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex flex-1 sm:flex-none justify-center items-center gap-2.5 rounded-xl px-4 sm:px-5 py-3 text-sm sm:text-base font-semibold whitespace-nowrap transition-all duration-200 ${
+                    isActive
+                      ? "bg-primary text-white shadow-md shadow-primary/30"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+                  }`}
+                >
+                  <tab.icon className="h-5 w-5" />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </motion.div>
 
-        {/* Content area */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="mx-auto max-w-6xl"
-          >
-            {/* Info bar */}
-            <div className="mb-6 flex flex-col gap-6 lg:flex-row lg:items-start">
-              <div className="flex-1">
-                <h3 className="mb-2 text-2xl font-bold text-foreground sm:text-3xl">
-                  {active.title}
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {active.desc}
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-2 lg:shrink-0">
-                {active.highlights.map((h, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-2 rounded-lg bg-glass px-3 py-2 text-xs font-medium"
-                  >
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                    <span className="text-foreground">{h}</span>
-                  </div>
-                ))}
-              </div>
+        {/* Content area — key swap triggers entrance, no exit animation = no flash */}
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="mx-auto max-w-6xl"
+        >
+          {/* Info — centered */}
+          <div className="mb-8 text-center space-y-4">
+            <h3 className="text-2xl font-bold text-foreground">{active.title}</h3>
+            <p className="text-sm text-slate-500 max-w-2xl mx-auto leading-relaxed">{active.desc}</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {active.highlights.map((h, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-primary rounded-full px-3 py-1.5 shadow-sm shadow-primary/20"
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-white/60" />
+                  {h}
+                </span>
+              ))}
             </div>
+          </div>
 
-            {/* Screenshot */}
-            <div className="relative rounded-2xl p-[1px] bg-gradient-to-b from-primary/30 via-secondary/20 to-border/30">
-              <div className="rounded-2xl bg-card overflow-hidden">
-                {/* Browser chrome */}
-                <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-                  <div className="flex gap-1.5">
-                    <span className="h-3 w-3 rounded-full bg-destructive/60" />
-                    <span className="h-3 w-3 rounded-full bg-yellow-500/60" />
-                    <span className="h-3 w-3 rounded-full bg-green-500/60" />
-                  </div>
-                  <div className="ml-3 flex-1 rounded-md bg-muted px-3 py-1">
-                    <span className="font-mono text-xs text-muted-foreground">
-                      https://your-domain.com/{active.id === "dashboard" ? "" : active.id}
-                    </span>
-                  </div>
-                </div>
-                <img
-                  src={active.image}
-                  alt={active.title}
-                  className="w-full"
-                  loading="lazy"
-                />
+          {/* Screenshot */}
+          <div className="relative rounded-2xl overflow-hidden border border-slate-200/80 shadow-xl shadow-slate-200/60">
+            {/* Browser chrome */}
+            <div className="flex items-center gap-2 bg-slate-50 border-b border-slate-200 px-4 py-3">
+              <div className="flex gap-1.5">
+                <span className="h-3 w-3 rounded-full bg-red-400/80" />
+                <span className="h-3 w-3 rounded-full bg-yellow-400/80" />
+                <span className="h-3 w-3 rounded-full bg-green-400/80" />
               </div>
-              {/* Bottom glow */}
-              <div className="absolute -bottom-6 left-1/2 h-12 w-3/4 -translate-x-1/2 rounded-full bg-primary/10 blur-2xl" />
+              <div className="ml-3 flex-1 rounded-lg bg-white border border-slate-200 px-3 py-1 max-w-xs">
+                <span className="font-mono text-xs text-slate-400">
+                  https://zhilian.cn/{active.id === "dashboard" ? "" : active.id}
+                </span>
+              </div>
             </div>
-          </motion.div>
-        </AnimatePresence>
+            <img
+              src={active.image}
+              alt={active.title}
+              className="w-full"
+              loading="lazy"
+            />
+          </div>
+        </motion.div>
       </div>
     </section>
   );

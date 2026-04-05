@@ -28,17 +28,32 @@ const ApplySection = () => {
 
     setSubmitting(true);
     try {
-      const { data, error } = await supabase.functions.invoke("send-application", {
-        body: form,
+      const response = await fetch("https://formspree.io/f/mgoppprr", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          姓名: form.name,
+          公司: form.company,
+          邮箱: form.email,
+          电话: form.phone || "未填写",
+          所属行业: form.industry,
+          公司规模: form.scale || "未填写",
+          需求描述: form.desc || "未填写",
+        }),
       });
 
-      if (error) throw error;
-
-      toast.success("提交成功！我们的团队将在 24 小时内与您联系");
-      setForm({ name: "", company: "", email: "", phone: "", industry: "", scale: "", desc: "" });
+      if (response.ok) {
+        toast.success("提交成功！我们的团队将在 24 小时内与您联系");
+        setForm({ name: "", company: "", email: "", phone: "", industry: "", scale: "", desc: "" });
+      } else {
+        throw new Error("Form submission failed");
+      }
     } catch (err) {
       console.error("Submit error:", err);
-      toast.error("提交失败，请稍后重试");
+      toast.error("网络连接失败，请稍后重试");
     } finally {
       setSubmitting(false);
     }
