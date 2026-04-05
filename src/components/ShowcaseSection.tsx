@@ -113,7 +113,7 @@ const ShowcaseSection = () => {
           viewport={{ once: true }}
           className="mb-10 flex justify-center"
         >
-          <div className="flex flex-wrap justify-center items-center gap-1.5 rounded-2xl bg-white border border-slate-200/80 shadow-md p-2 w-full max-w-full overflow-hidden">
+          <div className="flex flex-wrap justify-center items-center gap-1.5 rounded-2xl bg-white border border-slate-200/80 shadow-md p-2 w-full sm:w-auto max-w-full overflow-hidden">
             {tabs.map((tab) => {
               const isActive = tab.id === activeTab;
               return (
